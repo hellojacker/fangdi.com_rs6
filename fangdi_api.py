@@ -19,9 +19,35 @@ fangdi.com.cn 瑞数第二阶段 —— 可复用 API 签名器（iv8 版）
 """
 import console_fix
 import json
+import os
+
 import iv8
-import requests
 from urllib.parse import urlencode, urljoin
+
+# ---------- HTTP 后端 ----------
+# 站点会校验 TLS/HTTP2 指纹：裸 requests 常常只换回 400（空 body，连挑战页都不给），
+# curl_cffi 的 Chrome 指纹能正常拿到 412 挑战页。默认自动优先 curl_cffi。
+#   FANGDI_HTTP=auto|curl_cffi|requests      FANGDI_IMPERSONATE=chrome
+_HTTP_MODE = os.environ.get("FANGDI_HTTP", "auto").strip().lower()
+_http = None
+_IMPERSONATE = None
+if _HTTP_MODE in ("auto", "curl_cffi"):
+    try:
+        from curl_cffi import requests as _http            # noqa: F401
+        from curl_cffi.requests import exceptions as _http_exc
+        _IMPERSONATE = os.environ.get("FANGDI_IMPERSONATE", "chrome")
+    except Exception:
+        _http = None
+if _http is None:
+    import requests as _http                               # noqa: F401
+    from requests import exceptions as _http_exc
+    _IMPERSONATE = None
+_NET_EXC = (getattr(_http_exc, "RequestException", Exception),)
+
+
+def new_http_session():
+    """按当前后端创建会话；curl_cffi 走浏览器指纹，requests 走原生栈。"""
+    return _http.Session(impersonate=_IMPERSONATE) if _IMPERSONATE else _http.Session()
 
 BASE = "https://www.fangdi.com.cn"
 PAGE_URL = BASE + "/old_house/old_house.html"
@@ -45,7 +71,7 @@ class FangdiRuishu:
     def __init__(self, page_url=PAGE_URL, verbose=True, proxy_pool=None):
         self.page_url = page_url
         self.verbose = verbose
-        self.session = requests.Session()
+        self.session = new_http_session()
         self.proxy_pool = proxy_pool          # ProxyPool 实例；None=直连
         self.ctx = None
         self._last_proxy_server = None        # 观测：当前生效代理
@@ -86,7 +112,7 @@ class FangdiRuishu:
             try:
                 self.session.proxies = item["proxy"]
                 return self.session.request(method, url, **kwargs)
-            except requests.RequestException as e:
+            except _NET_EXC as e:
                 last_err = e
                 pool.mark_bad(item)
                 self._log(f"    [proxy] {item['server']} 失败({type(e).__name__})，换下一个")
