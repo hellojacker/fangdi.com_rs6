@@ -70,13 +70,13 @@
 | **`fangdi_api.py`** | ⭐ **核心库**：可复用签名器 `FangdiRuishu`，封装两阶段补环境 + 任意接口签名 + `rebootstrap()` 会话重建 |
 | **`fangdi_batch.py`** | ⭐ **批量采集**：按区县分片 + 断点续采 + cookie 失效页级重试 + 多进程并发 + IP 代理（日常使用入口） |
 | **`proxy_pool.py`** | 共享代理池：拉取/轮询/过期剔除/坏代理剔除/自动补充 |
-| `fangdi_iv8.py` | 第一阶段演示：412 → 生成 cookie → 200 页面 |
-| `fangdi_stage2.py` | 第二阶段演示：单次签名验证 `selectOldHouse.action` |
-| `probe_stage1.py` | 挑战页结构探测器（瑞数升级后先跑它比对） |
-| `probe_proxy.py` / `probe_proxy2.py` | 代理接口格式 / 代理连通性探测 |
-| `test_resume_recover.py` | 会话失效重建 + 断点续采回归测试 |
-| `test_proxy.py` | 代理轮换 / rebootstrap 换 IP 回归测试 |
-| `ANALYSIS.md` | 瑞数6 全流程分析（实测验证版） |
+| `examples/fangdi_iv8.py` | 第一阶段演示：412 → 生成 cookie → 200 页面 |
+| `examples/fangdi_stage2.py` | 第二阶段演示：单次签名验证 `selectOldHouse.action` |
+| `tools/probe_stage1.py` | 挑战页结构探测器（瑞数升级后先跑它比对） |
+| `tools/probe_proxy.py` / `tools/probe_proxy2.py` | 代理接口格式 / 代理连通性探测 |
+| `tools/test_resume_recover.py` | 会话失效重建 + 断点续采回归测试 |
+| `tools/test_proxy.py` | 代理轮换 / rebootstrap 换 IP 回归测试 |
+| `docs/ANALYSIS.md` | 瑞数6 全流程分析（实测验证版） |
 | `house_data.json` / `house_data.csv` | 采集结果样例（**未随仓库发布**，运行后本地生成） |
 
 ---

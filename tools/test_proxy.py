@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 """测试：坏代理剔除轮换 + 代理真实生效 + rebootstrap 换 IP"""
+# 允许直接 `python <subdir>/<script>.py` 运行：把项目根（含 fangdi_api.py）加入 sys.path
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
 import console_fix
 import os
 from proxy_pool import ProxyPool

@@ -1,7 +1,7 @@
 # fangdi.com.cn 瑞数6 全流程分析（2026-10 实测验证版）
 
 > 本文档基于本机实测（iv8 0.1.4 / Python 3.9）重跑验证后整理，所有证据可复现。
-> 验证命令：`python fangdi_iv8.py`、`python fangdi_stage2.py`、`python fangdi_batch.py --district 黄浦区 --pages 1`
+> 验证命令：`python examples/fangdi_iv8.py`、`python examples/fangdi_stage2.py`、`python fangdi_batch.py --district 黄浦区 --pages 1`
 
 ---
 
@@ -180,13 +180,13 @@ Python session                    fangdi.com.cn
 | `fangdi_api.py` | 核心库 `FangdiRuishu`：两阶段 bootstrap + `sign()/call()` 签名器 + `rebootstrap()` 会话失效重建 + `SessionExpiredError` 检测 + `_request()` 代理重试出口 |
 | `fangdi_batch.py` | 批量采集：按区县分片 + 断点续采（scrape_state.json）+ cookie 失效页级重试 + 多进程并发（`--workers`）+ IP 代理（日常入口） |
 | `proxy_pool.py` | 共享代理池：拉取（qg.net 接口）/轮询/过期剔除/坏代理剔除/自动补充 |
-| `fangdi_iv8.py` | 第一阶段演示（412→cookie→200） |
-| `fangdi_stage2.py` | 第二阶段演示（签名→重放→200） |
+| `examples/fangdi_iv8.py` | 第一阶段演示（412→cookie→200） |
+| `examples/fangdi_stage2.py` | 第二阶段演示（签名→重放→200） |
 | `console_fix.py` | Windows 控制台 GBK/UTF-8 输出修复 |
-| `probe_stage1.py` | 挑战页结构探测（升级后先跑它看结构是否变化） |
-| `probe_proxy.py` / `probe_proxy2.py` | 代理接口格式 / 代理连通性探测 |
-| `test_resume_recover.py` | 断点续采 / 会话失效页级重建回归测试 |
-| `test_proxy.py` | 坏代理轮换 / rebootstrap 换 IP 回归测试 |
+| `tools/probe_stage1.py` | 挑战页结构探测（升级后先跑它看结构是否变化） |
+| `tools/probe_proxy.py` / `tools/probe_proxy2.py` | 代理接口格式 / 代理连通性探测 |
+| `tools/test_resume_recover.py` | 断点续采 / 会话失效页级重建回归测试 |
+| `tools/test_proxy.py` | 坏代理轮换 / rebootstrap 换 IP 回归测试 |
 | `old_house_200.html` | 第二阶段真实页面样本（分析证据） |
 
 运行（必须用装了 iv8 的 Python 3.9）：
@@ -362,7 +362,7 @@ rebootstrap()（会话失效）
 
 ## 七、升级应变与注意
 
-1. **结构变化探测器**：若某天 412/重放失败，先跑 `probe_stage1.py`，对照第二节检查：
+1. **结构变化探测器**：若某天 412/重放失败，先跑 `tools/probe_stage1.py`，对照第二节检查：
    - `r='m'` 外联 script 是否还在（定位锚点）；
    - meta 标签 / `$_ts.nsd` / `$_ts.cd` 是否变化；
    - cookie 名字（`UA1L1zGonajvO/P`）是否换名——代码里已按 `document.cookie` 动态读取，不写死。

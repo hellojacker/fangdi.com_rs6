@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 """探测 qg.net 共享代理接口返回格式"""
+# 允许直接 `python <subdir>/<script>.py` 运行：把项目根（含 fangdi_api.py）加入 sys.path
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
 import requests
 import os
 

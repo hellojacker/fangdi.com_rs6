@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 """探测 fangdi.com.cn 当前瑞数第一阶段挑战结构"""
+# 允许直接 `python <subdir>/<script>.py` 运行：把项目根（含 fangdi_api.py）加入 sys.path
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
 import requests, re, sys
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "

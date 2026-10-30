@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 """测试：模拟 SessionExpiredError 触发页级重建重试（真实 rebootstrap）"""
+# 允许直接 `python <subdir>/<script>.py` 运行：把项目根（含 fangdi_api.py）加入 sys.path
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+
 import console_fix
 import os
 import shutil
