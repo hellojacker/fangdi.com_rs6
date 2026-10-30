@@ -1,0 +1,18 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ---- 采集产物 ----
+out/
+out_test/
+scrape_state.json
+test_state.json
+house_data.json
+house_data.csv
+*.jsonl
+*.jsonl.lock
+*.tmp
+
+# ---- 本地配置 ----
+.env

@@ -1,0 +1,8 @@
+# fangdi.com.cn 瑞数6 采集器依赖（Python 3.9 实测通过）
+#
+#   python -m pip install -r requirements.txt
+#
+# iv8      —— C++ V8 + 浏览器环境运行时，补环境执行瑞数 JS 的唯一执行底座（无 Node/无浏览器）
+# requests —— HTTP 会话（配合 iv8 现算签名后重放）
+iv8==0.1.4
+requests==2.28.2
