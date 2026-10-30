@@ -6,7 +6,7 @@
 > **仓库边界**：这里只保留可运行链路（签名器 / 批量采集 / 代理池 / 探测与回归脚本）+ 分析文档。
 > 采集数据（`house_data.*`）、断点状态（`scrape_state.json`）、抓包证据（`*.html` / `*.txt` / `*.bin`）
 > 与本地临时目录（`out/`、`__pycache__`、`.idea`）均**未随仓库发布**。
-> HTTP 层默认用 **curl_cffi**（浏览器 TLS/HTTP2 指纹）——裸 `requests` 会被站点以 400 空响应挡掉。
+> HTTP 层默认用 **requests**（与原项目一致）；站点对本机出口的 TLS 指纹敏感时，可显式切 `FANGDI_HTTP=curl_cffi`。
 
 ---
 
@@ -113,13 +113,13 @@ export QG_PROXY_KEY=你的key
 | 裸 `requests` | `400`，**6 字节空 body**，连 `$_ts` 挑战页都不给 |
 | `curl_cffi(impersonate="chrome")` | `412` 挑战页 + `$_ts` + 外联 JS → 两阶段正常 |
 
-所以 `fangdi_api.py` 默认自动优先 `curl_cffi`，装不上才回退 `requests`：
+`fangdi_api.py` **默认走 requests**；需要指纹伪装时显式开启（需先 `pip install curl_cffi`）：
 
 ```bash
-FANGDI_HTTP=auto        # 默认：有 curl_cffi 就用，没有就退 requests
-FANGDI_HTTP=curl_cffi   # 强制 curl_cffi
-FANGDI_HTTP=requests    # 强制 requests（仅用于对照复现 400）
-FANGDI_IMPERSONATE=chrome   # 默认 chrome，可换 chrome131 / edge101 等
+FANGDI_HTTP=requests    # 默认：纯 requests，与原项目一致
+FANGDI_HTTP=curl_cffi   # 显式启用浏览器指纹（需 pip install curl_cffi）
+FANGDI_HTTP=auto        # 装了 curl_cffi 就自动用
+FANGDI_IMPERSONATE=chrome   # 仅在 curl_cffi 后端生效，可换 chrome131 / edge101 等
 ```
 
 > ⚠️ **多解释器注意**：若终端报 `No module named 'iv8'`，说明当前 `python` 不是装了 iv8 的那个解释器。请确认 `python -c "import iv8"` 能成功，或直接用已装好 iv8 的解释器运行。
@@ -127,7 +127,7 @@ FANGDI_IMPERSONATE=chrome   # 默认 chrome，可换 chrome131 / edge101 等
 验证环境：
 
 ```bash
-python -c "import iv8, curl_cffi; print('ok')"   # curl_cffi 缺失时主链会自动回退 requests
+python -c "import iv8, requests; print('ok')"
 ```
 
 ---

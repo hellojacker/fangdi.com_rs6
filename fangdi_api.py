@@ -25,10 +25,11 @@ import iv8
 from urllib.parse import urlencode, urljoin
 
 # ---------- HTTP 后端 ----------
-# 站点会校验 TLS/HTTP2 指纹：裸 requests 常常只换回 400（空 body，连挑战页都不给），
-# curl_cffi 的 Chrome 指纹能正常拿到 412 挑战页。默认自动优先 curl_cffi。
-#   FANGDI_HTTP=auto|curl_cffi|requests      FANGDI_IMPERSONATE=chrome
-_HTTP_MODE = os.environ.get("FANGDI_HTTP", "auto").strip().lower()
+# **默认 requests**（与原项目一致）。站点会校验 TLS/HTTP2 指纹，若裸 requests 只换回
+# 400（空 body，连挑战页都不给），可显式切到 curl_cffi 的 Chrome 指纹：
+#   FANGDI_HTTP=requests（默认） | curl_cffi | auto（装了 curl_cffi 就自动用）
+#   FANGDI_IMPERSONATE=chrome
+_HTTP_MODE = os.environ.get("FANGDI_HTTP", "requests").strip().lower()
 _http = None
 _IMPERSONATE = None
 if _HTTP_MODE in ("auto", "curl_cffi"):
@@ -138,7 +139,15 @@ class FangdiRuishu:
         import re
         resp1 = self._request("GET", self.page_url, headers=self.base_headers, timeout=15)
         self._log(f"[1] 首次请求 status={resp1.status_code}")
-        js1_url = BASE + re.search(r'src="([^"]+\.js)"[^>]*r=\'m\'', resp1.text).group(1)
+        _m = re.search(r'src="([^"]+\.js)"[^>]*r=\'m\'', resp1.text)
+        if not _m:
+            _backend = "curl_cffi" if _IMPERSONATE else "requests"
+            raise RuntimeError(
+                "首个响应 status=%s，未找到瑞数外联 JS —— 页面被 WAF 直接拒绝"
+                "（站点会校验 TLS/HTTP2 指纹，裸 requests 常回 400 空 body）。\n"
+                "    当前后端 = %s。可试：FANGDI_HTTP=curl_cffi，或更换网络出口/代理 IP。"
+                % (resp1.status_code, _backend))
+        js1_url = BASE + _m.group(1)
         js1 = self._request("GET", js1_url, headers=self.base_headers, timeout=15).text
         with iv8.JSContext(environment=self.environment, config={"timezone": "Asia/Shanghai"}) as c:
             snap = {"baseURL": self.page_url, "html": resp1.text,

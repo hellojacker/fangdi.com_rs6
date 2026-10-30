@@ -3,9 +3,10 @@
 #   python -m pip install -r requirements.txt
 #
 # iv8       —— C++ V8 + 浏览器环境运行时，补环境执行瑞数 JS 的唯一执行底座（无 Node/无浏览器）
-# requests  —— HTTP 会话（基础后端）
-# curl_cffi —— 可选但强烈建议：伪装 Chrome 的 TLS/HTTP2 指纹。
-#              站点会校验指纹，裸 requests 常常只回 400（空 body），连 412 挑战页都拿不到。
+# requests  —— HTTP 会话（默认后端，与原项目一致）
 iv8==0.1.4
 requests==2.28.2
-curl_cffi==0.13.0
+
+# 可选：仅当显式设置 FANGDI_HTTP=curl_cffi（或 auto）时才需要，用于伪装 Chrome 的 TLS/HTTP2 指纹。
+# 本站点对裸 requests 可能回 400（6 字节空 body），此时才需要它。默认不安装。
+# curl_cffi==0.13.0
